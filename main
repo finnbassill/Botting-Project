@@ -1,5 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import requests
+from bs4 import BeautifulSoup as bs
+from pathlib import Path
 
 #Implements headless chrome and creates webdriver
 #options = webdriver.ChromeOptions()
@@ -9,94 +12,92 @@ from selenium.webdriver.chrome.options import Options
 #driver = webdriver.Chrome(chrome_options=options)
 driver = webdriver.Chrome()
 
-#Dictionary with size and coorelating size sku
-sizeToddlerDict = {
-    2 : 170
-    3 : 180
-    4 : 190
-    5 : 300
-    6 : 260
-    7 : 280
-    8 : 310
-    9 : 330
+#Lists with size and coorelating size sku
+toddlerSizeDict = {
+    2 : 170,
+    3 : 180,
+    4 : 190,
+    5 : 300,
+    6 : 260,
+    7 : 280,
+    8 : 310,
+    9 : 330,
     10 : 350
 }
-sizePreschoolDict = {
-    10.5 : 370
-    11 : 380
-    11.5 : 390
-    12 : 410
-    12.5 : 420
-    13 : 430
-    13.5 : 440
-    1 : 450
-    1.5 : 470
-    2 : 480
-    2.5 : 490
+preschoolSizeDict = {
+    10.5 : 370,
+    11 : 380,
+    11.5 : 390,
+    12 : 410,
+    12.5 : 420,
+    13 : 430,
+    13.5 : 440,
+    1 : 450,
+    1.5 : 470,
+    2 : 480,
+    2.5 : 490,
     3 : 510
 }
-sizeGradeschoolDict = {
-    3.5 : 520
-    4 : 530
-    4.5 : 540
-    5 : 550
-    5.5 : 560
-    6 : 570
-    6.5 : 580
+gradeschoolSizeDict = {
+    3.5 : 520,
+    4 : 530,
+    4.5 : 540,
+    5 : 550,
+    5.5 : 560,
+    6 : 570,
+    6.5 : 580,
     7 : 590
 }
-sizeMensDict = {
-    3.5 : 510
-    4 : 520
-    4.5 : 530
-    5 : 540
-    5.5 : 550
-    6 : 560
-    6.5 : 570
-    7 : 580
-    7.5 : 590
-    8 : 600
-    8.5 : 610
-    9 : 620
-    9.5 : 630
-    10 : 640
-    10.5 : 650
-    11 : 660
-    11.5 : 670
-    12 : 680
-    13 : 700
-    14 : 720
+mensSizeDict = {
+    3.5 : 510,
+    4 : 520,
+    4.5 : 530,
+    5 : 540,
+    5.5 : 550,
+    6 : 560,
+    6.5 : 570,
+    7 : 580,
+    7.5 : 590,
+    8 : 600,
+    8.5 : 610,
+    9 : 620,
+    9.5 : 630,
+    10 : 640,
+    10.5 : 650,
+    11 : 660,
+    11.5 : 670,
+    12 : 680,
+    13 : 700,
+    14 : 720,
     15 : 740
 }
-sizeWomensDict = {
-    5 : 510
-    5.5 : 520
-    6 : 530
-    6.5 : 540
-    7 : 550
-    7.5 : 560
-    8 : 570
-    8.5 : 580
-    9 : 590
-    9.5 : 600
-    10 : 610
-    10.5 : 620
-    11 : 630
-    11.5 : 640
-    12 : 650
-    12.5 : 660
-    13 : 670
-    13.5 : 680
-    14 : 690
-    14.5 : 700
-    15.5 : 720
+womensSizeDict = {
+    5 : 510,
+    5.5 : 520,
+    6 : 530,
+    6.5 : 540,
+    7 : 550,
+    7.5 : 560,
+    8 : 570,
+    8.5 : 580,
+    9 : 590,
+    9.5 : 600,
+    10 : 610,
+    10.5 : 620,
+    11 : 630,
+    11.5 : 640,
+    12 : 650,
+    12.5 : 660,
+    13 : 670,
+    13.5 : 680,
+    14.5 : 700,
+    15.5 : 720,
     16.5 : 740
 }
 
-
-#Url generator, takes original link + size and returns a funtional url carted
+#Url generator, takes sku and returns keyword link and keywords
 #Reebok
-def urlGen(sku, size):
+def urlGen(sku):
     #New link with keywords
     siteLink = 'https://www.reebok.com/us/'
     skuUrl = siteLink + sku + '.html'
@@ -104,16 +105,38 @@ def urlGen(sku, size):
     updatedLink = driver.current_url
     keywordsLink = updatedLink[26:]
     keywords = keywordsLink.split('/')[0]
+    return updatedLink, keywords
 
-    forceSize = '?forceSelSize='
+#Creates url with specified size and shoe
+def sizeUrlGen(sku, size, type):
+    link = urlGen(sku)[0]
+    if type is 'm':
+        dict = mensSizeDict
+    elif type is 'w':
+        dict = womensSizeDict
+    elif type is 'gs':
+        dict = gradeschoolSizeDict
+    elif type is 'ps':
+        dict = preschoolSizeDict
+    else:
+        dict = toddlerSizeDict
 
-    sizeUrl = updatedLink + forceSize + sku + '_'
+    sizeNum = dict[size]
+    sizeUrl = link + '?forceSelSize=' + sku + '_' + str(sizeNum)
+    return sizeUrl
+
+#Get page html in txt
+def htmlToFile(link):
+    driver.get(link)
+    content = driver.page_source
+    s = bs(content, 'html.parser')
+    soup = s.prettify()
+    f = open("/Users/finnbassill/Documents/HTML test.txt", 'w')
+    f.write(soup)
+    f.close
+
+def addToCart(sku, size, type):
+    
 
 
-
-
-
-
-    print(sizeUrl)
-
-urlGen('EF7291', 4)
+test = sizeUrlGen('V67899', 11, 'm')
