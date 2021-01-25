@@ -5,10 +5,10 @@ import requests
 from bs4 import BeautifulSoup as bs
 import os
 
-#Create webdriver and headless-chrome
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-driver = webdriver.Chrome(chrome_options=options)
+#Create webdriver
+driver = webdriver.ChromeOptions()
+driver.add_argument('--headless')
+driver.add_argument()
 
 #Clears terminal
 os.system('clear')
