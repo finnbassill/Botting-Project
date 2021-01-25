@@ -1,0 +1,45 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import DesiredCapabilities
+import requests
+from bs4 import BeautifulSoup as bs
+import os
+
+#Create webdriver and headless-chrome
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+driver = webdriver.Chrome(chrome_options=options)
+
+#Clears terminal
+os.system('clear')
+
+#Retrieves product sizes and product name
+def productInfo(sku):
+
+    #Link creation from sku
+    siteLink = 'https://www.reebok.com/us/'
+    productUrl = siteLink + sku + '.html'
+    driver.get(productUrl)
+
+    #Finding available sizes
+    sizes = []
+    spans = driver.find_elements_by_xpath("//button[@class='gl-label size___TqqSo']/span")
+    for s in spans:
+        sizes.append(s.text)
+    
+    #Retrieves product name
+    productName = driver.find_elements_by_xpath("//h1[@class='gl-heading gl-heading--regular gl-heading--italic name___1EbZs']/span")[1].text
+    print(productUrl)
+
+    return sizes, productName
+
+#Add the product to cart
+def atc(sku, size):
+    pass
+
+
+    
+
+
+    
+productInfo('H01205')

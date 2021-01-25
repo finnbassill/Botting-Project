@@ -125,18 +125,12 @@ def sizeUrlGen(sku, size, type):
     sizeUrl = link + '?forceSelSize=' + sku + '_' + str(sizeNum)
     return sizeUrl
 
-#Get page html in txt
-def htmlToFile(link):
-    driver.get(link)
-    content = driver.page_source
-    s = bs(content, 'html.parser')
-    soup = s.prettify()
-    f = open("/Users/finnbassill/Documents/HTML test.txt", 'w')
-    f.write(soup)
-    f.close
+
 
 def addToCart(sku, size, type):
-    
+    url = sizeUrlGen(sku, size, type)
+    driver.get(url)
+    atcButton = driver.find_element_by_xpath('//button[@title="Add To Cart"]')
+    #atcButton.click()
 
-
-test = sizeUrlGen('V67899', 11, 'm')
+sizeUrlGen('V67899', 11, 'm')
