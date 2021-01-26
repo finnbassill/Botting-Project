@@ -1,0 +1,76 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import requests
+from bs4 import BeautifulSoup as bs
+import os
+
+#Create webdriver
+#driver = webdriver.Chrome()
+chrome_options = Options()
+chrome_options.add_experimental_option('detach', True)
+driver = webdriver.Chrome(chrome_options=chrome_options)
+
+#Clears terminal
+os.system('clear')
+
+#Retrieves product sizes and product name
+def productInfo(sku):
+
+    #Link creation from sku
+    siteLink = 'https://www.reebok.com/us/'
+    productUrl = siteLink + sku + '.html'
+    driver.get(productUrl)
+    
+    #Finding available sizes
+    sizes = []
+    spans = driver.find_elements_by_xpath("//button[@class='gl-label size___TqqSo']/span")
+    for s in spans:
+        sizes.append(s.text)
+
+    #Retrieves product name
+    productName = driver.find_elements_by_xpath("//h1[@class='gl-heading gl-heading--regular gl-heading--italic name___1EbZs']/span")[1].text
+
+    return sizes, productName
+
+#Add the product to cart
+def atc(sku, size):
+    
+    pI = productInfo(sku)
+
+    #Click designated size
+    buttonLoc = pI[0]
+    driver.implicitly_wait(7) #change
+    ind = buttonLoc.index(str(size))
+    sizeButton = driver.find_elements_by_xpath("//button[@class='gl-label size___TqqSo']")[ind]
+    sizeButton.click()
+
+    #Find atc button and click
+    atcButton = driver.find_element_by_xpath("//button[@class='gl-cta gl-cta--primary gl-cta--full-width']")
+    atcButton.click()
+
+    #Cart link
+    cartLink = 'https://www.reebok.com/us/cart'
+    driver.get(cartLink)
+    
+
+#Add coupon code
+def acc(sku, size, code):
+
+    atc(sku, size)
+
+    #Find coupon input
+    driver.implicitly_wait(5) #change
+    couponInput = driver.find_element_by_xpath("//input[@name='coupon']")
+    couponInput.send_keys(code)
+
+    #Apply Code
+    applyCode = driver.find_element_by_xpath("//button[@class='gl-cta gl-cta--primary gl-cta--full-width coupon-form__submit___2GGg7']")
+    applyCode.click()
+    
+
+    
+acc('50169', 11, 'UNID-B9SM-WPGR-FWVG-CSTQ')

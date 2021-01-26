@@ -1,14 +1,16 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver import DesiredCapabilities
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 import requests
 from bs4 import BeautifulSoup as bs
 import os
 
 #Create webdriver
-driver = webdriver.ChromeOptions()
-driver.add_argument('--headless')
-driver.add_argument()
+options = webdriver.FirefoxOptions()
+options.headless = True
+driver = webdriver.Firefox(options=options, executable_path='/usr/local/bin/geckodriver')
 
 #Clears terminal
 os.system('clear')
@@ -20,16 +22,17 @@ def productInfo(sku):
     siteLink = 'https://www.reebok.com/us/'
     productUrl = siteLink + sku + '.html'
     driver.get(productUrl)
-
-    #Finding available sizes
+    
+    
     sizes = []
     spans = driver.find_elements_by_xpath("//button[@class='gl-label size___TqqSo']/span")
     for s in spans:
         sizes.append(s.text)
-    
+    print(spans)
+
     #Retrieves product name
     productName = driver.find_elements_by_xpath("//h1[@class='gl-heading gl-heading--regular gl-heading--italic name___1EbZs']/span")[1].text
-    print(productUrl)
+    print(productName)
 
     return sizes, productName
 
@@ -42,4 +45,4 @@ def atc(sku, size):
 
 
     
-productInfo('H01205')
+productInfo('V67899')
