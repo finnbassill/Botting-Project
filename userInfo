@@ -1,0 +1,35 @@
+import json
+
+file = "/Users/finnbassill/Documents/HTML test1.txt"
+
+#Unpacks info from profile import
+def importProfile(file):
+
+    #Opens and configures file
+    f = open(file, "r").read()
+    test = [f]
+    res = [json.loads(idx.replace("'",'"')) for idx in test]
+    profile = res[0][0]
+
+    #Basic info
+    profileName = profile['profileName']
+    email = profile['email']
+    phone = profile['phone']
+
+    #Configuring dicts
+    shippingDict = profile['shipping']
+    billingDict = profile['billing']
+    paymentDict = profile['payment']
+
+    #Billing same as shipping bool
+    billingAsShipping = profile['billingAsShipping']
+
+def newProfile(
+    profileName, email, phone, sFirstName, sLastName, sCountry, sAddress, sAddress2, sState, sCity,
+    sZipcode, billingAsShipping, bFirstName, bLastName, bCountry, bAddress, bAddress2, bState, bCity,
+    cardName, cardType, cardNumber, cardMonth, cardYear, cardCvv
+):
+    
+
+
+profileInfo(file)

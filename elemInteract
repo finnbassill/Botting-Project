@@ -70,7 +70,18 @@ def acc(sku, size, code):
     #Apply Code
     applyCode = driver.find_element_by_xpath("//button[@class='gl-cta gl-cta--primary gl-cta--full-width coupon-form__submit___2GGg7']")
     applyCode.click()
-    
 
+#Checkout
+def checkout(sku, size, code, profile):
+
+    acc(sku, size, code)
+
+    #Find and click checkout button
+    driver.implicitly_wait(5) #change
+    checkoutButton = driver.find_element_by_xpath("//button[@class='gl-cta gl-cta--primary gl-cta--full-width']")
+    checkoutButton.click()
+
+    #Browser logs debugging
+    print(driver.get_log('browser'))
     
-acc('50169', 11, 'UNID-B9SM-WPGR-FWVG-CSTQ')
+checkout('V67899', 11, 'UNID-B9SM-WPGR-FWVG-CSTQ', 'profile')
